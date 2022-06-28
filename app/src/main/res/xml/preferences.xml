@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <EditTextPreference android:title="URL de l'API" android:key="urlData" android:defaultValue="http://tomnab.fr/todo-api/" android:summary="URL de l'API todo sur postman"/>
+    <PreferenceCategory android:key="identifiants" android:title="Identifiants" android:summary="Saisie des identifiants utilisateur">
+        <EditTextPreference android:title="Login" android:key="login" android:defaultValue="login"/>
+        <EditTextPreference android:title="Passe" android:key="passe" android:defaultValue="password"/>
+    </PreferenceCategory>
+</PreferenceScreen>
