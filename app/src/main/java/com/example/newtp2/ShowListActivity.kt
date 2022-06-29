@@ -35,33 +35,60 @@ class ShowListActivity : AppCompatActivity() {
 
         sharedPrefTokens = getSharedPreferences("tokens", 0)
 
-        setupRecyclerView()
+        // Setting up Recycler View
+        adapter = ItemListAdapter(todos = myitems, this)
+        val item = findViewById<RecyclerView>(R.id.rvItems)
+        item.adapter = adapter
+        item.layoutManager = LinearLayoutManager(this, VERTICAL, false)
+
         idList = intent.getIntExtra("id_list", 1991)
         //val pseudo: String? = intent.getStringExtra("EXTRA_pseudo")
         //currentUser = pseudo!!
         val pseudo : String? = sharedPrefTokens.getString("EXTRA_pseudo","")
         currentUser = pseudo!!
+
         getItems()
 
         val hash = sharedPrefTokens.getString("token", "")
 
         btnAddItem.setOnClickListener{
-            GlobalScope.launch {
-                val title = etNewItem.text.toString()
-                val itemApi  = hash?.let { it1 -> RetrofitInstance.api.postItem(idList, title, "new url", it1).awaitResponse() }
+            val title = etNewItem.text.toString()
+            val newItem = Item(title, false)
 
-
-                Log.d("Item", "Status: ${itemApi!!.body()}")
-                /*
-                val itemResponse = itemApi?.body()?
-                if (itemResponse != null) {
-                    itemResponse.idList = idList!!
-                }
-                if (itemResponse != null) {
-                    adapter.addItem(itemResponse)
-                }
-                */
+            if (title.isBlank()) {
+                Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
             }
+            else if (repeatedElement(title, myitems)) {
+                Toast.makeText(this, "This item exists already", Toast.LENGTH_SHORT).show()
+            }
+            else { // IF TITLE IS VALID
+
+    //          POST ITEM TO API
+                CoroutineScope(SupervisorJob() + Dispatchers.Main).launch {
+                    val itemApi  = hash?.let { it1 -> RetrofitInstance.api.postItem(idList, title, "new url", it1).awaitResponse() }
+                    Log.d("Item", "itemapi: $itemApi")
+                    withContext(Dispatchers.Main) {
+                        myitems.add(newItem)
+                        rvItems.adapter!!.notifyItemInserted(myitems.size - 1)
+                    }
+
+                    /*
+                    val itemResponse = itemApi?.body()?
+                    if (itemResponse != null) {
+                        itemResponse.idList = idList!!
+                    }
+                    if (itemResponse != null) {
+                        adapter.addItem(itemResponse)
+                    }
+                    */
+                }
+
+//              Extra features
+                hideSoftKeyboard(it)
+                etNewItem.text.clear()
+            }
+
+//
             /*val title = etNewItem.text.toString()
             if (title.isBlank()) {
                 Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
@@ -80,13 +107,6 @@ class ShowListActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun setupRecyclerView() {
-        adapter = ItemListAdapter(todos = mutableListOf<Item>(), this)
-        val item = findViewById<RecyclerView>(R.id.rvItems)
-        item.adapter = adapter
-        item.layoutManager = LinearLayoutManager(this, VERTICAL, false)
-    }
 
     private fun hideSoftKeyboard(view: View) {
         val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -111,12 +131,11 @@ class ShowListActivity : AppCompatActivity() {
                     val itemsFound = data.items
                     Log.e(TAG, "todolists found : \n" + itemsFound.toString())
                     withContext(Dispatchers.Main) {
-                        /*
                         for (newItem in itemsFound) {
                             myitems.add(newItem)
-                            adapter.notifyItemInserted(myitems.size - 1)
-                        }*/
-                        adapter.display(itemsFound)
+                            rvItems.adapter!!.notifyItemInserted(myitems.size - 1)
+                        }
+//                        adapter.display(itemsFound)
                     }
                 }
             } catch(e : Exception){
@@ -126,6 +145,11 @@ class ShowListActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun resetRecyclerView() {
+        myitems = mutableListOf()
+        rvItems.adapter!!.notifyDataSetChanged()
     }
 
 }

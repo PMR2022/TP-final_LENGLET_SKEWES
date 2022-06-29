@@ -18,12 +18,7 @@ class ItemListAdapter (
     inner class ItemListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         init {
             itemView.setOnClickListener {
-                Intent(mContext, ShowListActivity::class.java).also {
-                    // TODO ADD necessary info to intent: id list
-                    //val id_list = 1;
-                    //it.putExtra("id_list", id_list)
-                    mContext.startActivity(it)
-                }
+
             }
         }
     }
