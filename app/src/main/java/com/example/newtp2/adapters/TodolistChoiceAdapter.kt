@@ -15,13 +15,19 @@ class TodolistChoiceAdapter (
     var todolists: List<TodoList>,
     var mContext: Context
 ) : RecyclerView.Adapter<TodolistChoiceAdapter.TodolistChoiceViewHolder>() {
+
+
+
     inner class TodolistChoiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        var idList : Int = 0
+
         init {
             itemView.setOnClickListener {
                 Intent(mContext, ShowListActivity::class.java).also {
                     // TODO ADD necessary info to intent: id list
                     //val id_list = 1;
-                    //it.putExtra("id_list", id_list)
+                    it.putExtra("id_list", idList)
                     mContext.startActivity(it)
                 }
             }
@@ -38,6 +44,7 @@ class TodolistChoiceAdapter (
     }
 
     override fun onBindViewHolder(holder: TodolistChoiceViewHolder, position: Int) {
+        holder.idList = todolists[position].id.toInt()
         holder.itemView.apply {
             tvTodolistChoice.text = todolists[position].label
         }

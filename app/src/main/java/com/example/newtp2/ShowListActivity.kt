@@ -9,11 +9,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.example.newtp2.adapters.ItemListAdapter
 import com.example.newtp2.api.RetrofitInstance
 import com.example.newtp2.models.*
-import kotlinx.android.synthetic.main.activity_choix_list.*
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_show_list.*
 import kotlinx.coroutines.*
 import retrofit2.Response
@@ -25,6 +25,8 @@ class ShowListActivity : AppCompatActivity() {
     private lateinit var sharedPrefTokens: SharedPreferences
     private lateinit var currentUser: String
     private var myitems = mutableListOf<Item>()
+    private lateinit var adapter: ItemListAdapter
+    private var idList : Int = 1991
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,20 +34,16 @@ class ShowListActivity : AppCompatActivity() {
 
         sharedPrefTokens = getSharedPreferences("tokens", 0)
 
-        // Setting up Recycler View
-        val adapter = ItemListAdapter(myitems,this)
-        rvItems.adapter = adapter
-        rvItems.layoutManager = LinearLayoutManager(this)
-
+        setupRecyclerView()
+        idList = intent.getIntExtra("id_list", 1991)
         //val pseudo: String? = intent.getStringExtra("EXTRA_pseudo")
         //currentUser = pseudo!!
         val pseudo : String? = sharedPrefTokens.getString("EXTRA_pseudo","")
         currentUser = pseudo!!
-
         getItems()
 
         btnAddItem.setOnClickListener{
-            val title = etNewItem.text.toString()
+            /*val title = etNewItem.text.toString()
             if (title.isBlank()) {
                 Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
             }
@@ -58,12 +56,18 @@ class ShowListActivity : AppCompatActivity() {
                 adapter.notifyItemInserted(myitems.size - 1)
                 hideSoftKeyboard(it)
                 etNewItem.text.clear()
-            }
+            }*/
+
         }
     }
 
 
-
+    private fun setupRecyclerView() {
+        adapter = ItemListAdapter(todos = mutableListOf<Item>(), this)
+        val item = findViewById<RecyclerView>(R.id.rvItems)
+        item.adapter = adapter
+        item.layoutManager = LinearLayoutManager(this, VERTICAL, false)
+    }
 
     private fun hideSoftKeyboard(view: View) {
         val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -76,23 +80,24 @@ class ShowListActivity : AppCompatActivity() {
 
 
     private fun getItems(){
-        val hash = sharedPrefTokens.getString(currentUser, "")
+        val hash = sharedPrefTokens.getString("token", "")
         //val id_list = sharedPrefTokens.getInt("id_list",1991)
-        val id_list = 1991
         CoroutineScope(SupervisorJob() + Dispatchers.Main).launch{
             try {
-                val response: Response<ItemResponse> = RetrofitInstance.api.getItems(id_list, hash!!).awaitResponse()
-                Log.e(TAG, "response found : \n " + response.toString())
+                val response: Response<ItemResponse> = RetrofitInstance.api.getItems(idList, hash!!).awaitResponse()
+                Log.d(TAG, "response found : \n " + response.toString() + " hash " + hash)
                 if (response.isSuccessful) {
                     val data: ItemResponse = response.body()!!
-                    //Log.d(TAG, data.toString())
+                    Log.d(TAG, data.items.toString())
                     val itemsFound = data.items
                     Log.e(TAG, "todolists found : \n" + itemsFound.toString())
                     withContext(Dispatchers.Main) {
+                        /*
                         for (newItem in itemsFound) {
                             myitems.add(newItem)
-                            rvTodos.adapter!!.notifyItemInserted(myitems.size - 1)
-                        }
+                            adapter.notifyItemInserted(myitems.size - 1)
+                        }*/
+                        adapter.display(itemsFound)
                     }
                 }
             } catch(e : Exception){

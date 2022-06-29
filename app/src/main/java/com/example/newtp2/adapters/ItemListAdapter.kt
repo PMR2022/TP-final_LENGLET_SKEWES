@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newtp2.R
 import com.example.newtp2.ShowListActivity
-import com.example.newtp2.Todo
 import com.example.newtp2.models.Item
 import kotlinx.android.synthetic.main.todo_item.view.*
 
 class ItemListAdapter (
-    var todos: List<Item>,
+    var todos: MutableList<Item>,
     var mContext: Context
 ) : RecyclerView.Adapter<ItemListAdapter.ItemListViewHolder>() {
     inner class ItemListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -44,5 +43,10 @@ class ItemListAdapter (
             tvItem.text = todos[position].label
             cbDone.isChecked = todos[position].done
         }
+    }
+
+    fun display(new_todos : List<Item>){
+        todos.addAll(new_todos)
+        notifyDataSetChanged()
     }
 }
