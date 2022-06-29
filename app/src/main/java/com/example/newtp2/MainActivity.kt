@@ -3,6 +3,9 @@ package com.example.newtp2
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -42,17 +45,24 @@ class MainActivity : AppCompatActivity() {
         btnOk.setOnClickListener{
             val pseudo = etPseudo.text.toString()
             val password = etPassword.text.toString()
-            editor.apply{
+
+            val connectedInfo = if (checkForInternet(this)) {
+                "Logging with user $pseudo"
+            } else {
+                "No internet connection -> Offline Mode"
+            }
+
+            editor.apply {
                 putString("lastPseudo", pseudo)
                 apply()
             }
-            editor_pref.apply{
-                putString("login",pseudo)
+            editor_pref.apply {
+                putString("login", pseudo)
                 putString("passe", password)
                 apply()
             }
 //            Toast.makeText(this, "Pseudo $pseudo saved in Shared Preferences", Toast.LENGTH_SHORT).show()
-            authenticate(pseudo, password, this)
+            authenticate(pseudo, password)
 
             // On peut recuperer le token dès sharedPreferences comme ça :
             val testtoken = sharedPrefTokens.getString(pseudo, "NO TOKEN")
@@ -62,12 +72,14 @@ class MainActivity : AppCompatActivity() {
 
             if (canLogin) {
                 Intent(this, ChoixListActivity::class.java).also {
+                    Toast.makeText(this@MainActivity, connectedInfo, Toast.LENGTH_LONG).show()
                     it.putExtra("EXTRA_pseudo", pseudo)
                     startActivity(it)
                 }
             } else {
                 Toast.makeText(this, "Unable to login", Toast.LENGTH_SHORT).show()
             }
+
         }
     }
 
@@ -114,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun authenticate(user: String, pass: String, context: Context) {
+    private fun authenticate(user: String, pass: String) {
         CoroutineScope(SupervisorJob() + Dispatchers.Main).launch{
             try {
                 val response: Response<AuthenticationResponse> = api.authenticate(user, pass)
@@ -137,6 +149,47 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Exception found :\n $e")
                 return@launch
             }
+        }
+    }
+
+//  TODO: Soit on efface les commentaires et faison de notre façon, soit on laisse comme ça et on cite la source
+//  Source : https://www.geeksforgeeks.org/how-to-check-internet-connection-in-kotlin/
+    private fun checkForInternet(context: Context): Boolean {
+
+        // register activity with the connectivity manager service
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        // if the android version is equal to M
+        // or greater we need to use the
+        // NetworkCapabilities to check what type of
+        // network has the internet connection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            // Returns a Network object corresponding to
+            // the currently active default data network.
+            val network = connectivityManager.activeNetwork ?: return false
+
+            // Representation of the capabilities of an active network.
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            return when {
+                // Indicates this network uses a Wi-Fi transport,
+                // or WiFi has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+
+                // Indicates this network uses a Cellular transport. or
+                // Cellular has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+
+                // else return false
+                else -> false
+            }
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
         }
     }
 
