@@ -158,10 +158,14 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, response.toString())
                 if (response.isSuccessful) {
                     val data: AuthenticationResponse = response.body()!!
+                    var user = listDao.getUser(user)
+                    var idUser = user.id
+                    Log.d(TAG, "VOICI ID_USER : "+idUser)
                     //Log.d(TAG, data.toString())
                     Log.e(TAG, "HAAAASH : " + data.hash)
+                    sharedPrefTokens.edit().putInt("idUserActuel", idUser).apply()
                     sharedPrefTokens.edit().putString("token", data.hash).apply()
-                    sharedPrefTokens.edit().putString(user, data.hash).apply()
+                    sharedPrefTokens.edit().putString(user.toString(), data.hash).apply()
                     canLogin = true
                     return@launch
                 } else {
@@ -219,5 +223,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun saveUsers(usersFound: List<User>) {
         listDao.saveOrUpdateUsers(usersFound)
     }
+
+
 
 }

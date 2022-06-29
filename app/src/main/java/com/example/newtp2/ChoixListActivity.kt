@@ -26,7 +26,7 @@ class ChoixListActivity : AppCompatActivity() {
     private var TAG = "ChoixListActivity"
     private lateinit var sharedPrefTokens: SharedPreferences
     private lateinit var currentUser: String
-    private lateinit var idUser: String
+    private var idUser: Int = 403
     private var todolists = mutableListOf<TodoList>()
     private lateinit var listDao : ListeDao
 
@@ -47,6 +47,7 @@ class ChoixListActivity : AppCompatActivity() {
 
         sharedPrefTokens = getSharedPreferences("tokens", 0)
 
+
 //      Setting up Recycler View
         val adapter = TodolistChoiceAdapter(todolists, this)
         rvTodos.adapter = adapter
@@ -56,6 +57,7 @@ class ChoixListActivity : AppCompatActivity() {
         pseudo?.let { tvWelcomeUser.text = "$pseudo's ToDoLists" }
         currentUser = pseudo!!
 
+        idUser = sharedPrefTokens.getInt("idUserActuel",403)
         getTodoLists()
 
         btnAddTodo.setOnClickListener {
@@ -97,7 +99,7 @@ class ChoixListActivity : AppCompatActivity() {
                     val data: GetTodoListResponse = response.body()!!
                     //Log.d(TAG, data.toString())
                     val todoListsFound = data.lists
-                    //for (list in todoListsFound) list.idUser=idUser
+                    for (list in todoListsFound) list.idUser=idUser
                     saveLists(todoListsFound)
                     Log.e(TAG, "todolists found : \n" + todoListsFound.toString())
                     withContext(Dispatchers.Main) {
