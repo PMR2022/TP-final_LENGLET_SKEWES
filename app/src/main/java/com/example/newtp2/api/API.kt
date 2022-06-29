@@ -40,6 +40,6 @@ interface API {
         @Query(value = "label", encoded = true) label : String,
         @Query(value = "url", encoded = true) url : String,
         @Header("hash") hash: String,
-    ) : Response<ItemResponse>
+    ) : Call<Item>
 
 }

@@ -49,4 +49,9 @@ class ItemListAdapter (
         todos.addAll(new_todos)
         notifyDataSetChanged()
     }
+
+    fun addItem(item : Item) {
+        todos.add(item)
+        notifyDataSetChanged()
+    }
 }

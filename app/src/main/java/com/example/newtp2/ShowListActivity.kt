@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.example.newtp2.adapters.ItemListAdapter
 import com.example.newtp2.api.RetrofitInstance
+import com.example.newtp2.api.RetrofitInstance.api
 import com.example.newtp2.models.*
 import kotlinx.android.synthetic.main.activity_show_list.*
 import kotlinx.coroutines.*
@@ -42,7 +43,25 @@ class ShowListActivity : AppCompatActivity() {
         currentUser = pseudo!!
         getItems()
 
+        val hash = sharedPrefTokens.getString("token", "")
+
         btnAddItem.setOnClickListener{
+            GlobalScope.launch {
+                val title = etNewItem.text.toString()
+                val itemApi  = hash?.let { it1 -> RetrofitInstance.api.postItem(idList, title, "new url", it1).awaitResponse() }
+
+
+                Log.d("Item", "Status: ${itemApi!!.body()}")
+                /*
+                val itemResponse = itemApi?.body()?
+                if (itemResponse != null) {
+                    itemResponse.idList = idList!!
+                }
+                if (itemResponse != null) {
+                    adapter.addItem(itemResponse)
+                }
+                */
+            }
             /*val title = etNewItem.text.toString()
             if (title.isBlank()) {
                 Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
