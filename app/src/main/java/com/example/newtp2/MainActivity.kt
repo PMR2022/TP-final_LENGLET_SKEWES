@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     private lateinit var sharedPrefTokens: SharedPreferences
     private var canLogin: Boolean = false
+    private var idUser : Int =403
     private lateinit var listDao : ListeDao
 
 
@@ -81,7 +82,6 @@ class MainActivity : AppCompatActivity() {
 //            Toast.makeText(this, "Pseudo $pseudo saved in Shared Preferences", Toast.LENGTH_SHORT).show()
             getUsers()
             authenticate(pseudo, password)
-
             // On peut recuperer le token dès sharedPreferences comme ça :
             val testtoken = sharedPrefTokens.getString(pseudo, "NO TOKEN")
             Log.e(TAG, "TEST TOKEN : " + testtoken)
@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, ChoixListActivity::class.java).also {
                     Toast.makeText(this@MainActivity, connectedInfo, Toast.LENGTH_LONG).show()
                     it.putExtra("EXTRA_pseudo", pseudo)
+                    it.putExtra("idUser",idUser)
                     startActivity(it)
                 }
             } else {
@@ -159,11 +160,11 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val data: AuthenticationResponse = response.body()!!
                     var user = listDao.getUser(user)
-                    var idUser = user.id
+                    idUser = user.id
                     Log.d(TAG, "VOICI ID_USER : "+idUser)
                     //Log.d(TAG, data.toString())
                     Log.e(TAG, "HAAAASH : " + data.hash)
-                    sharedPrefTokens.edit().putInt("idUserActuel", idUser).apply()
+                    //sharedPrefTokens.edit().putInt("idUserActuel", idUser).apply()
                     sharedPrefTokens.edit().putString("token", data.hash).apply()
                     sharedPrefTokens.edit().putString(user.toString(), data.hash).apply()
                     canLogin = true

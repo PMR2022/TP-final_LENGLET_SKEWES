@@ -57,7 +57,9 @@ class ChoixListActivity : AppCompatActivity() {
         pseudo?.let { tvWelcomeUser.text = "$pseudo's ToDoLists" }
         currentUser = pseudo!!
 
-        idUser = sharedPrefTokens.getInt("idUserActuel",403)
+        idUser = intent.getIntExtra("idUser",403)
+
+
         getTodoLists()
 
         btnAddTodo.setOnClickListener {
@@ -111,7 +113,7 @@ class ChoixListActivity : AppCompatActivity() {
                 }
             } catch(e : Exception){
 
-                val todoListsFound = listDao.getLists(0)
+                val todoListsFound = listDao.getLists(idUser)
                 Log.e(TAG, "todolists found : \n" + todoListsFound.toString())
                 withContext(Dispatchers.Main) {
                     for (newTodoList in todoListsFound) {
