@@ -38,7 +38,7 @@ class ChoixListActivity : AppCompatActivity() {
         rvTodos.layoutManager = LinearLayoutManager(this)
 
         val pseudo: String? = intent.getStringExtra("EXTRA_pseudo")
-        pseudo?.let { tvWelcomeUser.text = "$pseudo' ToDoLists" }
+        pseudo?.let { tvWelcomeUser.text = "$pseudo's ToDoLists" }
         currentUser = pseudo!!
 
         getTodoLists()

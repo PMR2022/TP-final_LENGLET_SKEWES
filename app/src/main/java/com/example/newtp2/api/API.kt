@@ -1,9 +1,6 @@
 package com.example.newtp2.api
 
-import com.example.newtp2.models.AuthenticationResponse
-import com.example.newtp2.models.GetTodoListResponse
-import com.example.newtp2.models.ResponseCats
-import com.example.newtp2.models.UsersResponse
+import com.example.newtp2.models.*
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -30,5 +27,19 @@ interface API {
 
     @GET("lists")
     fun getTodoLists(@Header("hash") hash: String): Call<GetTodoListResponse>
+
+    @GET("lists/{id_list}/items")
+    fun getItems(
+        @Path(value = "id_list", encoded = true) idList : Int,
+        @Header("hash") hash: String
+    ) : Call<ItemResponse>
+
+    @POST("lists/{id_list}/items")
+    fun postItem(
+        @Path(value = "id_list", encoded = true) idList : Int,
+        @Query(value = "label", encoded = true) label : String,
+        @Query(value = "url", encoded = true) url : String,
+        @Header("hash") hash: String,
+    ) : Response<ItemResponse>
 
 }

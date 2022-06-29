@@ -1,7 +1,7 @@
 package com.example.newtp2.models
 
 
-class Item(private var label: String = "",private var done: Boolean = false) {
+class Item(var label: String = "", var done: Boolean = false) {
     constructor(desc: String) : this(desc, false)
 
     fun setDesc(newDesc: String) {
@@ -12,3 +12,7 @@ class Item(private var label: String = "",private var done: Boolean = false) {
         return "- "+label+": ["+ (if(done) "x" else " ") + "]";
     }
 }
+
+data class ItemResponse(
+    val items: List<Item>
+)

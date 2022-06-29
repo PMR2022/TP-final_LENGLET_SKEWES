@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NewTP2"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name="com.example.newtp2.ShowListActivity"
