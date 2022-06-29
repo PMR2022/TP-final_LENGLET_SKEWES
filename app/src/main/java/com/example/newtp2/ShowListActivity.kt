@@ -11,9 +11,12 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import androidx.room.Room
 import com.example.newtp2.adapters.ItemListAdapter
 import com.example.newtp2.api.RetrofitInstance
 import com.example.newtp2.api.RetrofitInstance.api
+import com.example.newtp2.bdd.DataBase
+import com.example.newtp2.bdd.ListeDao
 import com.example.newtp2.models.*
 import kotlinx.android.synthetic.main.activity_show_list.*
 import kotlinx.coroutines.*
@@ -28,10 +31,21 @@ class ShowListActivity : AppCompatActivity() {
     private var myitems = mutableListOf<Item>()
     private lateinit var adapter: ItemListAdapter
     private var idList : Int = 1991
+    private lateinit var listDao : ListeDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_list)
+
+        val app = this.application
+        // SEQUENCE 3
+        val database = Room.databaseBuilder(
+            app,
+            DataBase::class.java,
+            "data-base"
+        ).build()
+
+        listDao = database.listDao()
 
         sharedPrefTokens = getSharedPreferences("tokens", 0)
 
@@ -129,7 +143,8 @@ class ShowListActivity : AppCompatActivity() {
                     val data: ItemResponse = response.body()!!
                     Log.d(TAG, data.items.toString())
                     val itemsFound = data.items
-                    //saveItems(itemsFound)
+                    for (item in itemsFound) item.idList = idList
+                    saveItems(itemsFound)
                     Log.e(TAG, "todolists found : \n" + itemsFound.toString())
                     withContext(Dispatchers.Main) {
                         for (newItem in itemsFound) {
@@ -140,6 +155,17 @@ class ShowListActivity : AppCompatActivity() {
                     }
                 }
             } catch(e : Exception){
+                val itemsFound = listDao.getItems(idList)
+                for (item in itemsFound) item.idList = idList
+                //saveItems(itemsFound)
+                Log.e(TAG, "todolists found : \n" + itemsFound.toString())
+                withContext(Dispatchers.Main) {
+                    for (newItem in itemsFound) {
+                        myitems.add(newItem)
+                        rvItems.adapter!!.notifyItemInserted(myitems.size - 1)
+                    }
+//                        adapter.display(itemsFound)
+                }
                 Log.e(TAG, "Exception found :\n $e")
                 withContext(Dispatchers.Main){
                     Toast.makeText(applicationContext,"ça marche pas",Toast.LENGTH_LONG).show()
@@ -152,10 +178,10 @@ class ShowListActivity : AppCompatActivity() {
         myitems = mutableListOf()
         rvItems.adapter!!.notifyDataSetChanged()
     }
-/*
-    private suspend fun saveItems(todoListsFound: List<TodoList>) {
-        listDao.saveOrUpdateList(todoListsFound)
-    }*/
+
+    private suspend fun saveItems(itemsFound: List<Item>) {
+        listDao.saveOrUpdateItems(itemsFound)
+    }
 
 }
 

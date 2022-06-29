@@ -15,7 +15,10 @@ import android.widget.Toast
 import androidx.room.Room
 import com.example.newtp2.api.RetrofitInstance.api
 import com.example.newtp2.bdd.DataBase
+import com.example.newtp2.bdd.ListeDao
 import com.example.newtp2.models.AuthenticationResponse
+import com.example.newtp2.models.Item
+import com.example.newtp2.models.User
 import com.example.newtp2.models.UsersResponse
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
@@ -29,11 +32,22 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     private lateinit var sharedPrefTokens: SharedPreferences
     private var canLogin: Boolean = false
+    private lateinit var listDao : ListeDao
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val app = this.application
+        // SEQUENCE 3
+        val database = Room.databaseBuilder(
+            app,
+            DataBase::class.java,
+            "data-base"
+        ).build()
+
+        listDao = database.listDao()
 
         val sharedPref = getSharedPreferences("lastPseudo", Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
@@ -65,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                 apply()
             }
 //            Toast.makeText(this, "Pseudo $pseudo saved in Shared Preferences", Toast.LENGTH_SHORT).show()
+            getUsers()
             authenticate(pseudo, password)
 
             // On peut recuperer le token dès sharedPreferences comme ça :
@@ -113,6 +128,8 @@ class MainActivity : AppCompatActivity() {
                 val response: Response<UsersResponse> = api.getUsers(hash!!).awaitResponse()
                 if (response.isSuccessful) {
                     val data: UsersResponse = response.body()!!
+                    val users = data.users
+                    saveUsers(users)
                     //Log.d(TAG, data.toString())
                     Log.e(TAG, data.toString())
                     withContext(Dispatchers.Main) {
@@ -120,6 +137,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } catch(e : Exception){
+                val usersFound = listDao.getUsers()
+                //saveUsers(usersFound)
+                withContext(Dispatchers.Main) {
+                    //test_textView.text = data.users.toString()
+                }
                 Log.e(TAG, "Exception found :\n $e")
                 withContext(Dispatchers.Main){
                     Toast.makeText(applicationContext,"ça marche pas",Toast.LENGTH_LONG).show()
@@ -192,6 +214,10 @@ class MainActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             return networkInfo.isConnected
         }
+    }
+
+    private suspend fun saveUsers(usersFound: List<User>) {
+        listDao.saveOrUpdateUsers(usersFound)
     }
 
 }

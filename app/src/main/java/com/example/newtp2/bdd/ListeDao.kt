@@ -20,9 +20,13 @@ interface ListeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
      fun saveOrUpdateUser(pseudo: User)
 
+    // Sauve tous les users
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveOrUpdateUsers(users: List<User>)
+
     // Sauve les Items
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun saveOrUpdateItems(items : List<Item>)
+    suspend fun saveOrUpdateItems(items : List<Item>)
 
     // Récupère les listes d'un user (désigné par son idUser)
     @Query("SELECT * FROM TODOLIST WHERE idUser = :id")
@@ -35,5 +39,9 @@ interface ListeDao {
     // Récupère le User grâce à son pseudo
     @Query("SELECT * FROM USER WHERE pseudo = :namePseudo")
      fun getUser(namePseudo : String) : User
+
+    // Récupère le User grâce à son pseudo
+    @Query("SELECT * FROM USER")
+    fun getUsers() : List<User>
 
 }

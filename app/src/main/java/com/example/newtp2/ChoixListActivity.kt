@@ -26,6 +26,7 @@ class ChoixListActivity : AppCompatActivity() {
     private var TAG = "ChoixListActivity"
     private lateinit var sharedPrefTokens: SharedPreferences
     private lateinit var currentUser: String
+    private lateinit var idUser: String
     private var todolists = mutableListOf<TodoList>()
     private lateinit var listDao : ListeDao
 
@@ -96,6 +97,7 @@ class ChoixListActivity : AppCompatActivity() {
                     val data: GetTodoListResponse = response.body()!!
                     //Log.d(TAG, data.toString())
                     val todoListsFound = data.lists
+                    //for (list in todoListsFound) list.idUser=idUser
                     saveLists(todoListsFound)
                     Log.e(TAG, "todolists found : \n" + todoListsFound.toString())
                     withContext(Dispatchers.Main) {
@@ -106,6 +108,15 @@ class ChoixListActivity : AppCompatActivity() {
                     }
                 }
             } catch(e : Exception){
+
+                val todoListsFound = listDao.getLists(0)
+                Log.e(TAG, "todolists found : \n" + todoListsFound.toString())
+                withContext(Dispatchers.Main) {
+                    for (newTodoList in todoListsFound) {
+                        todolists.add(newTodoList)
+                        rvTodos.adapter!!.notifyItemInserted(todolists.size - 1)
+                    }
+                }
                 Log.e(TAG, "Exception found :\n $e")
                 withContext(Dispatchers.Main){
                     Toast.makeText(applicationContext,"ça marche pas",Toast.LENGTH_LONG).show()
