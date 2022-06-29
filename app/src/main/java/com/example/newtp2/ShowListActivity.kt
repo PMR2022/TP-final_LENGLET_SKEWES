@@ -129,6 +129,7 @@ class ShowListActivity : AppCompatActivity() {
                     val data: ItemResponse = response.body()!!
                     Log.d(TAG, data.items.toString())
                     val itemsFound = data.items
+                    //saveItems(itemsFound)
                     Log.e(TAG, "todolists found : \n" + itemsFound.toString())
                     withContext(Dispatchers.Main) {
                         for (newItem in itemsFound) {
@@ -151,6 +152,10 @@ class ShowListActivity : AppCompatActivity() {
         myitems = mutableListOf()
         rvItems.adapter!!.notifyDataSetChanged()
     }
+/*
+    private suspend fun saveItems(todoListsFound: List<TodoList>) {
+        listDao.saveOrUpdateList(todoListsFound)
+    }*/
 
 }
 
