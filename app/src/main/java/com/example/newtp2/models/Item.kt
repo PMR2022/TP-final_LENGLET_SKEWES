@@ -1,8 +1,19 @@
 package com.example.newtp2.models
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-class Item(var label: String = "", var done: Boolean = false) {
-    constructor(desc: String) : this(desc, false)
+@Entity
+class Item(
+    @PrimaryKey
+    var id : Int,
+    @ColumnInfo(name = "list_id")
+    var idList : Int,
+    var done: Boolean = false,
+    var label: String = ""
+    ) {
+    constructor(label: String) : this(0,1992,false, label)
 
     fun setDesc(newDesc: String) {
         label = newDesc;

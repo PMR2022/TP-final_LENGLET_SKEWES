@@ -1,5 +1,7 @@
 package com.example.newtp2.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
@@ -15,8 +17,11 @@ import com.google.gson.annotations.SerializedName
 //    }
 //}
 
+@Entity
 data class TodoList(
+    @PrimaryKey
     val id: String,
+    var idUser : Int = 403,
     val label: String
 )
 

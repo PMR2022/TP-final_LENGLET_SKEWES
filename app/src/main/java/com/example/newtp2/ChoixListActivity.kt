@@ -54,7 +54,7 @@ class ChoixListActivity : AppCompatActivity() {
             else {
                   // TODO: Ici je ferais ça: on fait le post de la nouvelle liste (tu peux t'inspirer de Aunthenticate), et puis on re appele "getTodoLists"
                   // TODO: C'est pas efficace mais ça devrait marcher, et bon, on fera mieux la prochaine fois :)
-                todolists.add(TodoList("XXX", newTodoLabel))
+                //todolists.add(TodoList("XXX", newTodoLabel))
                 adapter.notifyItemInserted(todolists.size - 1)
 
                 hideSoftKeyboard(it)
