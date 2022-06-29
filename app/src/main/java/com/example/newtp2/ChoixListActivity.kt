@@ -52,7 +52,7 @@ class ChoixListActivity : AppCompatActivity() {
                 Toast.makeText(this, "This todolist exists already", Toast.LENGTH_SHORT).show()
             }
             else {
-                todolists.add(TodoList("XXX", newTodoLabel))
+                todolists.add(TodoList("XXX", label=newTodoLabel))
                 adapter.notifyItemInserted(todolists.size - 1)
 
                 hideSoftKeyboard(it)

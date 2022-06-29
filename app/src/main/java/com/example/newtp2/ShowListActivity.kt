@@ -53,7 +53,7 @@ class ShowListActivity : AppCompatActivity() {
 
         btnAddItem.setOnClickListener{
             val title = etNewItem.text.toString()
-            val newItem = Item(title, false)
+            val newItem = Item(label = title)
 
             if (title.isBlank()) {
                 Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
