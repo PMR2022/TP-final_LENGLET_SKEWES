@@ -12,7 +12,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.room.Room
 import com.example.newtp2.api.RetrofitInstance.api
+import com.example.newtp2.bdd.DataBase
 import com.example.newtp2.models.AuthenticationResponse
 import com.example.newtp2.models.UsersResponse
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     private lateinit var sharedPrefTokens: SharedPreferences
     private var canLogin: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,14 +116,14 @@ class MainActivity : AppCompatActivity() {
                     //Log.d(TAG, data.toString())
                     Log.e(TAG, data.toString())
                     withContext(Dispatchers.Main) {
-                        test_textView.text = data.users.toString()
+                        //test_textView.text = data.users.toString()
                     }
                 }
             } catch(e : Exception){
                 Log.e(TAG, "Exception found :\n $e")
                 withContext(Dispatchers.Main){
                     Toast.makeText(applicationContext,"ça marche pas",Toast.LENGTH_LONG).show()
-                    test_textView.text = "ça marche pas"
+                    //test_textView.text = "ça marche pas"
                 }
             }
         }
@@ -135,8 +138,6 @@ class MainActivity : AppCompatActivity() {
                     val data: AuthenticationResponse = response.body()!!
                     //Log.d(TAG, data.toString())
                     Log.e(TAG, "HAAAASH : " + data.hash)
-
-//                  Saving token for specific user + "general" token (getting users for example)
                     sharedPrefTokens.edit().putString("token", data.hash).apply()
                     sharedPrefTokens.edit().putString(user, data.hash).apply()
                     canLogin = true

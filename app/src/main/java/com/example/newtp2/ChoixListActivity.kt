@@ -9,8 +9,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.example.newtp2.adapters.TodolistChoiceAdapter
 import com.example.newtp2.api.RetrofitInstance
+import com.example.newtp2.bdd.DataBase
+import com.example.newtp2.bdd.ListeDao
 import com.example.newtp2.models.GetTodoListResponse
 import com.example.newtp2.models.TodoList
 import kotlinx.android.synthetic.main.activity_choix_list.*
@@ -24,11 +27,22 @@ class ChoixListActivity : AppCompatActivity() {
     private lateinit var sharedPrefTokens: SharedPreferences
     private lateinit var currentUser: String
     private var todolists = mutableListOf<TodoList>()
+    private lateinit var listDao : ListeDao
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
+
+        val app = this.application
+        // SEQUENCE 3
+        val database = Room.databaseBuilder(
+            app,
+            DataBase::class.java,
+            "data-base"
+        ).build()
+
+        listDao = database.listDao()
 
         sharedPrefTokens = getSharedPreferences("tokens", 0)
 
@@ -82,6 +96,7 @@ class ChoixListActivity : AppCompatActivity() {
                     val data: GetTodoListResponse = response.body()!!
                     //Log.d(TAG, data.toString())
                     val todoListsFound = data.lists
+                    saveLists(todoListsFound)
                     Log.e(TAG, "todolists found : \n" + todoListsFound.toString())
                     withContext(Dispatchers.Main) {
                         for (newTodoList in todoListsFound) {
@@ -97,5 +112,10 @@ class ChoixListActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    private suspend fun saveLists(todoListsFound: List<TodoList>) {
+        listDao.saveOrUpdateList(todoListsFound)
     }
 }

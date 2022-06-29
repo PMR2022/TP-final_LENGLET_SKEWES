@@ -13,7 +13,7 @@ class Item(
     var done: Boolean = false,
     var label: String = ""
     ) {
-    constructor(label: String) : this(0,1992,false, label)
+    //constructor(label: String) : this(0,1992,false, label)
 
     fun setDesc(newDesc: String) {
         label = newDesc;

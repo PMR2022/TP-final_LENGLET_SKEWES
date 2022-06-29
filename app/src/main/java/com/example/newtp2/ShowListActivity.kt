@@ -53,7 +53,7 @@ class ShowListActivity : AppCompatActivity() {
 
         btnAddItem.setOnClickListener{
             val title = etNewItem.text.toString()
-            val newItem = Item(label = title)
+            //val newItem = Item(label = title)
 
             if (title.isBlank()) {
                 Toast.makeText(this, "Text cannot be blank", Toast.LENGTH_SHORT).show()
@@ -68,7 +68,7 @@ class ShowListActivity : AppCompatActivity() {
                     val itemApi  = hash?.let { it1 -> RetrofitInstance.api.postItem(idList, title, "new url", it1).awaitResponse() }
                     Log.d("Item", "itemapi: $itemApi")
                     withContext(Dispatchers.Main) {
-                        myitems.add(newItem)
+                        myitems.add(itemApi!!.body()!!)
                         rvItems.adapter!!.notifyItemInserted(myitems.size - 1)
                     }
 
