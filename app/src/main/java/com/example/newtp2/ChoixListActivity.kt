@@ -25,6 +25,7 @@ class ChoixListActivity : AppCompatActivity() {
     private lateinit var currentUser: String
     private var todolists = mutableListOf<TodoList>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choix_list)
