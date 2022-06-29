@@ -1,4 +1,7 @@
-package com.example.newtp2.api
+package com.example.newtp2.models
+
+import com.example.newtp2.api.Status
+import com.google.gson.annotations.SerializedName
 
 
 data class RandomCatFacts(
@@ -13,4 +16,9 @@ data class RandomCatFacts(
     val updatedAt: String,
     val used: Boolean,
     val user: String
+)
+
+data class ResponseCats (
+    @SerializedName("text")
+    val text: String
 )

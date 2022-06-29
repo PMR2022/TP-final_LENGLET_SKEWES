@@ -8,16 +8,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newtp2.R
 import com.example.newtp2.ShowListActivity
+import com.example.newtp2.models.TodoList
 import kotlinx.android.synthetic.main.todolist_choice.view.*
 
 class TodolistChoiceAdapter (
-    var todolists: List<String>,
+    var todolists: List<TodoList>,
     var mContext: Context
 ) : RecyclerView.Adapter<TodolistChoiceAdapter.TodolistChoiceViewHolder>() {
     inner class TodolistChoiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnClickListener {
                 Intent(mContext, ShowListActivity::class.java).also {
+                    // TODO ADD necessary info to intent: id list
                     mContext.startActivity(it)
                 }
             }
@@ -35,7 +37,7 @@ class TodolistChoiceAdapter (
 
     override fun onBindViewHolder(holder: TodolistChoiceViewHolder, position: Int) {
         holder.itemView.apply {
-            tvTodolistChoice.text = todolists[position]
+            tvTodolistChoice.text = todolists[position].label
         }
     }
 }

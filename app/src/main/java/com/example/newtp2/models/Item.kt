@@ -1,4 +1,4 @@
-package com.example.newtp2.api
+package com.example.newtp2.models
 
 
 class Item(private var label: String = "",private var done: Boolean = false) {
